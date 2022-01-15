@@ -10,7 +10,28 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>samll-spring-step-01</module>
+        <module>samll-spring-step-02</module>
+        <module>samll-spring-step-03</module>
     </modules>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.22</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <version>3.1</version>
+        </dependency>
+    </dependencies>
 
 </project>
