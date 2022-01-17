@@ -12,6 +12,7 @@
         <module>samll-spring-step-01</module>
         <module>samll-spring-step-02</module>
         <module>samll-spring-step-03</module>
+        <module>samll-spring-step-04</module>
     </modules>
 
     <dependencies>
