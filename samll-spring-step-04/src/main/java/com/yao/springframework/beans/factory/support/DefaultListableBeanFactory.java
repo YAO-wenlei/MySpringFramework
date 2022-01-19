@@ -11,7 +11,7 @@ import java.util.Map;
  * @description:
  * @since 2022-01-17 14:44:23
  */
-public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFactory implements BeanDefinitionRegistory {
+public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFactory implements BeanDefinitionRegister {
 
     private Map<String, BeanDefinition> beanDefinitionMap = new HashMap<>();
 

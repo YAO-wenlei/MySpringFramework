@@ -19,6 +19,5 @@ public class ApiTest {
         defaultListableBeanFactory.registerBeanDefinition("UserService", beanDefinition);
         UserService bean = (UserService) defaultListableBeanFactory.getBean("UserService", "zhangsan");
         bean.queryUserInfo();
-
     }
 }

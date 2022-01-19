@@ -12,6 +12,13 @@ import lombok.Setter;
 @Setter
 public class UserService {
     private String name;
+    private String userId;
+
+    UserDao userDao = new UserDao();
+
+    public UserService() {
+
+    }
 
     public UserService(String name){
         this.name = name;
@@ -19,5 +26,9 @@ public class UserService {
 
     public void queryUserinfo() {
         System.out.println(name);
+    }
+
+    public String queryUserName() {
+        return userDao.getUserName(userId);
     }
 }

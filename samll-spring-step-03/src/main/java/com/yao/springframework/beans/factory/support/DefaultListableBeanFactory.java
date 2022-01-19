@@ -18,7 +18,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
     @Override
     protected BeanDefinition getDefinition(String beanName) throws BeanException {
         BeanDefinition beanDefinition = beanDefinitionMap.get(beanName);
-        if (beanDefinition == null) throw new BeanException("No bean nameD" + beanName + "is defined");
+        if (beanDefinition == null) throw new BeanException("No bean name" + beanName + "is defined");
         return beanDefinition;
     }
 
