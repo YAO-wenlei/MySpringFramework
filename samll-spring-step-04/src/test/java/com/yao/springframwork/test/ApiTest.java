@@ -5,8 +5,8 @@ import com.yao.springframework.beans.PropertyValues;
 import com.yao.springframework.beans.factory.config.BeanDefinition;
 import com.yao.springframework.beans.factory.config.BeanReference;
 import com.yao.springframework.beans.factory.support.DefaultListableBeanFactory;
-import com.yao.springframwork.test.bean.UserDao;
-import com.yao.springframwork.test.bean.UserService;
+import com.yao.springframework.test.bean.UserDao;
+import com.yao.springframework.test.bean.UserService;
 import org.junit.Test;
 
 /**

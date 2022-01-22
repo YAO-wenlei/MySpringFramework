@@ -1,13 +1,11 @@
 package com.yao.springframework.beans.factory.support;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.yao.springframework.beans.BeanExcepiton;
+import com.yao.springframework.beans.BeanException;
 import com.yao.springframework.beans.PropertyValue;
 import com.yao.springframework.beans.PropertyValues;
-import com.yao.springframework.beans.factory.BeanFacroty;
 import com.yao.springframework.beans.factory.config.BeanDefinition;
 import com.yao.springframework.beans.factory.config.BeanReference;
-import sun.applet.Main;
 
 import java.lang.reflect.Constructor;
 
@@ -20,7 +18,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     private InstantiationStrategy instantiationStrategy = new CglibSubClassingInstantiationStrategy();
 
     @Override
-    protected Object createBean(String beanName, BeanDefinition beanDefinition, Object[] args) throws BeanExcepiton {
+    protected Object createBean(String beanName, BeanDefinition beanDefinition, Object[] args) throws BeanException {
         Object bean = null;
         try {
             //创建实例
@@ -28,7 +26,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             //属性填充
             applyPropertyValue(beanName, bean, beanDefinition);
         }catch (Exception e ){
-            throw new BeanExcepiton("bean instance exception", e);
+            throw new BeanException("bean instance exception", e);
         }
         addSingletonBean(beanName,bean);
         return bean;
@@ -63,7 +61,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
                 BeanUtil.setFieldValue(bean,name,value);
             }
         }catch (Exception e){
-            throw new BeanExcepiton("beanApplyProperty errro", e);
+            throw new BeanException("beanApplyProperty errro", e);
         }
 
     };
