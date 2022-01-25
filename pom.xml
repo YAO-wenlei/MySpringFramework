@@ -16,6 +16,7 @@
         <module>samll-spring-step-05</module>
         <module>samll-spring-step-06</module>
         <module>samll-spring-step-07</module>
+        <module>samll-spring-step-08</module>
     </modules>
 
     <dependencies>
