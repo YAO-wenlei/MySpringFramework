@@ -16,6 +16,8 @@ import java.util.Set;
 public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry{
     private Map<String, Object> singletonMap = new HashMap<>();
 
+    protected static final Object NULL_OBJECT = new Object();
+
     //需要销毁的bean
     private final Map<String, DisposableBean> disposableBeanMap = new HashMap<>();
 
