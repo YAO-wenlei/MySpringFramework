@@ -19,7 +19,7 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry{
     }
 
     //添加单例的bean
-    protected void addSingletonBean(String beanName, Object singletionObject) {
-        singletonMap.put(beanName, singletionObject);
+    protected void addSingletonBean(String beanName, Object singletonObject) {
+        singletonMap.put(beanName, singletonObject);
     }
 }

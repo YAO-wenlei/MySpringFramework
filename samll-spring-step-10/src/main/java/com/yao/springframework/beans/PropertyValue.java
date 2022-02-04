@@ -13,5 +13,4 @@ public class PropertyValue {
         this.name = name;
         this.value = value;
     }
-
 }

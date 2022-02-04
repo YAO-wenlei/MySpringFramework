@@ -4,8 +4,7 @@ import com.yao.springframework.beans.BeanException;
 import com.yao.springframework.beans.factory.ConfigurableListableBeanFactory;
 import com.yao.springframework.beans.factory.config.BeanDefinition;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author YAO_WENLEI
@@ -55,4 +54,20 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
         beanDefinitionMap.keySet().forEach(this::getBean);
     }
 
+    @Override
+    public <T> T getBean(Class<T> requiredType) throws BeanException {
+        List<String> beanNames = new ArrayList<>();
+        Set<Map.Entry<String, BeanDefinition>> entries = beanDefinitionMap.entrySet();
+        for (Map.Entry<String, BeanDefinition> entry : entries) {
+            if (requiredType.isAssignableFrom(entry.getValue().getBeanClass())) {
+                beanNames.add(entry.getKey());
+            }
+        }
+
+        if (1 == beanNames.size()){
+            return getBean(beanNames.get(0), requiredType);
+        }
+
+        throw new BeanException(requiredType + "expected single bean but fond" + beanNames.size() + ":" + beanNames);
+    }
 }

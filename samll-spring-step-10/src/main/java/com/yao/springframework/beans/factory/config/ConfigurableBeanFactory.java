@@ -1,6 +1,7 @@
 package com.yao.springframework.beans.factory.config;
 
 import com.yao.springframework.beans.factory.HierarchicalBeanFactory;
+import com.yao.springframework.util.StringValueResolver;
 
 /**
  * @author yaowenlei
@@ -10,7 +11,13 @@ import com.yao.springframework.beans.factory.HierarchicalBeanFactory;
 public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, SingletonBeanRegistry {
     String SCOPE_SINGLETON = "singleton";
     String SCOPE_PROTOTYPE = "prototype";
+
     void addBeanPostProcessor(BeanPostProcessor beanPostProcessor);
 
     void destroySingletons();
+
+    void addEmbeddedValueResolver(StringValueResolver valueResolver);
+
+    String resolveEmbeddedValue(String value);
+
 }

@@ -6,13 +6,11 @@ import com.yao.springframework.beans.BeanException;
 import com.yao.springframework.beans.PropertyValue;
 import com.yao.springframework.beans.PropertyValues;
 import com.yao.springframework.beans.factory.*;
-import com.yao.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import com.yao.springframework.beans.factory.config.BeanDefinition;
-import com.yao.springframework.beans.factory.config.BeanPostProcessor;
-import com.yao.springframework.beans.factory.config.BeanReference;
+import com.yao.springframework.beans.factory.config.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * @author YAO_WENLEI
@@ -26,8 +24,15 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     protected Object createBean(String beanName, BeanDefinition beanDefinition, Object[] args) throws BeanException {
         Object bean = null;
         try {
+            //判断是否返回代理对象
+            bean = resolveBeforeInstantiation(beanName, beanDefinition);
+            if (bean != null) {
+                return bean;
+            }
             //创建实例
             bean = createBeanInstance(beanName, beanDefinition, args);
+            //在属性填充前设置bean的属性
+            applyBeanPostProcessorBeforeApplyingPropertyValues(beanName, bean, beanDefinition);
             //属性填充
             applyPropertyValue(beanName, bean, beanDefinition);
             //执行bean的初始化方法 和beanProcessor方法
@@ -44,6 +49,42 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         }
         return bean;
     }
+
+    //在属性填充前 通过注解注入属性值
+    private void applyBeanPostProcessorBeforeApplyingPropertyValues(String beanName, Object bean, BeanDefinition beanDefinition) {
+        List<BeanPostProcessor> beanPostProcessors = getBeanPostProcessors();
+        for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
+            if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor){
+                PropertyValues propertyValues = ((InstantiationAwareBeanPostProcessor) beanPostProcessor).postProcessPropertyValues(beanDefinition.getPropertyValues(), bean, beanName);
+                if (null != propertyValues) {
+                    for (PropertyValue propertyValue : propertyValues.getPropertyValues()) {
+                        beanDefinition.getPropertyValues().addPropertyValue(propertyValue);
+                    }
+                }
+            }
+        }
+    }
+
+    //是否返回代理对象
+    private Object resolveBeforeInstantiation(String beanName, BeanDefinition beanDefinition) {
+        Object bean = applyBeanPostProcessorBeforeInitialization(beanDefinition.getBeanClass(), beanName);
+        if (bean != null){
+            bean = applyBeanPostProcessorAfterInitialization(bean, beanName);
+        }
+        return bean;
+    }
+
+    public Object applyBeanPostProcessorBeforeInitialization(Class<?> beanClass, String beanName) {
+        for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()){
+            //如果继承此就接口 就说明是一个代理类
+            if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
+                Object result = ((InstantiationAwareBeanPostProcessor) beanPostProcessor).postProcessBeforeInitialization(beanClass, beanName);
+                if (null != result) return result;
+            }
+        }
+        return null;
+    }
+
 
     private void registerDisposableBeanIfNecessary(String beanName, Object bean, BeanDefinition beanDefinition) {
         if (!beanDefinition.isSingleton()) return;

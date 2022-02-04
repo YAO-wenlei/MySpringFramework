@@ -50,7 +50,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         //4,bean实例化之前，执行BeanFactoryPostProcessor  可以获取beanDefinition信息 并进行修改
         invokeBeanFactoryProcessor(beanFactory);
 
-        //5,在bean实例化之前 注册postProcessor
+        //5,在bean实例化之前 注册postProcessor   此时的BeanPostProcessor的实现类已经是创建好的
         registryBeanPostProcessor(beanFactory);
 
 
@@ -67,9 +67,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         finishRefresh();
 
     }
-
-
-
 
     protected abstract void refreshBeanFactory();
 
@@ -132,6 +129,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     @Override
     public <T> T getBean(String beanName, Class<T> requiredType) throws BeanException {
         return getBeanFactory().getBean(beanName,requiredType);
+    }
+
+    @Override
+    public <T> T getBean(Class<T> requiredType) throws BeanException {
+        return getBeanFactory().getBean(requiredType);
     }
 
     @Override
