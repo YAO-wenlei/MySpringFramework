@@ -41,6 +41,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegisterSupport imp
         //获取bean 没有创建
         Object singleton = getSingleton(beanName);
 
+        //获取factoryBean接口实现的的getObject返回的对象
         if (null != singleton) {
             return (T) getObjectForBeanInstance(singleton,beanName);
         }

@@ -1,5 +1,7 @@
 package com.yao.springframework.aop;
 
+import com.yao.springframework.util.ClassUtils;
+
 /**
  * @author yaowenlei
  * @description 被代理对象
@@ -13,7 +15,9 @@ public class TargetSource {
     }
 
     public Class<?>[] getTargetClass() {
-        return this.target.getClass().getInterfaces();
+        Class<?> aClass = this.target.getClass();
+        aClass = ClassUtils.isCglibProxyClass(aClass) ? aClass.getSuperclass() : aClass;
+        return aClass.getInterfaces();
     }
 
     public Object getTarget() {

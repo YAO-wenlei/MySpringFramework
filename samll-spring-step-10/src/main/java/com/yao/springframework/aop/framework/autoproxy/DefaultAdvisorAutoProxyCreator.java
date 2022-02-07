@@ -19,6 +19,9 @@ import org.aspectj.lang.reflect.Pointcut;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author yaowenlei
@@ -27,6 +30,7 @@ import java.util.Collection;
  */
 public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPostProcessor, BeanFactoryAware {
     private DefaultListableBeanFactory beanFactory;
+    private final Set<Object> earlyProxyReferences = Collections.synchronizedSet(new HashSet<>());
 
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeanException {
@@ -34,33 +38,13 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
     }
 
     @Override
-    public Object postProcessBeforeInitialization(Class<?> beanClass, String beanName) throws BeanException {
-        if (inInfrastructureClass(beanClass)) return null;
-
-        Collection<AspectjExpressionPointCutAdvisor> advisors = beanFactory.getBeanOfType(AspectjExpressionPointCutAdvisor.class).values();
-        for (AspectjExpressionPointCutAdvisor advisor : advisors) {
-            ClassFilter classFilter = advisor.getPointCut().getClassFilter();
-            if (!classFilter.matches(beanClass)) continue;
-
-            AdvisedSupport advisedSupport = new AdvisedSupport();
-
-            TargetSource targetSource = null;
-            try {
-                targetSource = new TargetSource(beanClass.getDeclaredConstructor().newInstance());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            advisedSupport.setTargetSource(targetSource);
-            advisedSupport.setMethodInterceptor((MethodInterceptor)advisor.getAdvice());
-            advisedSupport.setMethodMatcher(advisor.getPointCut().getMethodMatcher());
-            advisedSupport.setProxyTargetClass(false);
-
-            return new ProxyFactory(advisedSupport).getAopProxy();
-
-        }
-
+    public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeanException {
         return null;
+    }
+
+    @Override
+    public boolean postProcessAfterInstantiation(Object object, String beanName) throws BeanException {
+        return true;
     }
 
     @Override
@@ -74,6 +58,36 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeanException {
+        if (!earlyProxyReferences.contains(beanName)) {
+            return wrapIfNecessary(bean, beanName);
+        }
+        return bean;
+    }
+
+    protected Object wrapIfNecessary(Object bean, String beanName) {
+        if (inInfrastructureClass(bean.getClass())) return null;
+
+        Collection<AspectjExpressionPointCutAdvisor> advisors = beanFactory.getBeanOfType(AspectjExpressionPointCutAdvisor.class).values();
+        for (AspectjExpressionPointCutAdvisor advisor : advisors) {
+            ClassFilter classFilter = advisor.getPointCut().getClassFilter();
+            if (!classFilter.matches(bean.getClass())) continue;
+
+            AdvisedSupport advisedSupport = new AdvisedSupport();
+
+            TargetSource targetSource = null;
+            try {
+                targetSource = new TargetSource(bean.getClass().getDeclaredConstructor().newInstance());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            advisedSupport.setTargetSource(targetSource);
+            advisedSupport.setMethodInterceptor((MethodInterceptor) advisor.getAdvice());
+            advisedSupport.setMethodMatcher(advisor.getPointCut().getMethodMatcher());
+            advisedSupport.setProxyTargetClass(false);
+
+            return new ProxyFactory(advisedSupport).getAopProxy();
+        }
         return bean;
     }
 
@@ -82,5 +96,9 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
         return bean;
     }
 
-
+    @Override
+    public Object getEarlyBeanReference(Object bean, String beanName) {
+        earlyProxyReferences.add(beanName);
+        return wrapIfNecessary(bean,beanName);
+    }
 }
